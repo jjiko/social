@@ -1,0 +1,19 @@
+{
+  "name": "jjiko/shorten",
+  "description": "social networks integrations",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Joe Jiko",
+      "email": "me@joejiko.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "Jiko\\Social\\": "src/"
+    }
+  }
+}
