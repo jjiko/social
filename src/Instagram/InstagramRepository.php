@@ -10,12 +10,7 @@ class InstagramRepository
 
   public function __construct()
   {
-    $this->instagram = new Instagram([
-      'apiKey' => env("INSTAGRAM_CLIENT_ID"),
-      'apiSecret' => env("INSTAGRAM_CLIENT_SECRET"),
-      'apiCallback' => env("INSTAGRAM_REDIRECT_URI")
-    ]);
-    $this->instagram->setAccessToken('30589941.ffa73be.fd1c0a339a594d0aa3dab44be0863c3d');
+    $this->instagram = new Instagram;
   }
 
   public function user()
@@ -119,9 +114,9 @@ class InstagramRepository
     return $data;
   }
 
-  public function next($object)
+  public function next($response)
   {
-    return $this->instagram->pagination($object);
+    return $this->instagram->client->paginate($response, 1);
   }
 
   public function media($params = [])
@@ -129,7 +124,7 @@ class InstagramRepository
     if (empty($params)) $params['count'] = 8;
 
     // Don't cache with max_id (paginated)
-    if (empty($params['max_id'])) {
+    if (empty($params['max_id']) && 1==2) {
       if ($cache = self::readCache('instagram.media.' . $params['count'])) {
         if ($data = self::cacheIsFresh($cache)) {
           return $data;
@@ -137,21 +132,15 @@ class InstagramRepository
       }
     }
 
-    try {
-      $media = $this->user()->media($params);
-    } catch (Instagram\Core\ApiException $e) {
-      return null;
-    }
-
-    $data['next'] = $media->next();
-
+    $media = $this->user()->media($params);
+    $data['next'] = $this->next($media);
     $data['media'] = [];
 
-    foreach ($media->getData() as $media) {
-      $data['media'][] = $media->getData();
+    foreach ($media->get('data') as $media) {
+      $data['media'][] = (object) $media;
     }
 
-    if (empty($params['max_id'])) {
+    if (empty($params['max_id']) && 1==2) {
       $cache->update(['data' => json_encode($data)]);
     }
 
