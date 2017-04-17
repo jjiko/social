@@ -7,6 +7,7 @@ class InstagramRepository
   use CacheableApiTrait;
 
   protected $instagram;
+  public $useCache = true;
 
   public function __construct()
   {
@@ -124,10 +125,12 @@ class InstagramRepository
     if (empty($params)) $params['count'] = 8;
 
     // Don't cache with max_id (paginated)
-    if (empty($params['max_id']) && 1==2) {
-      if ($cache = self::readCache('instagram.media.' . $params['count'])) {
-        if ($data = self::cacheIsFresh($cache)) {
-          return $data;
+    if ($this->useCache) {
+      if (empty($params['max_id'])) {
+        if ($cache = self::readCache('instagram.media.' . $params['count'])) {
+          if ($data = self::cacheIsFresh($cache)) {
+            return $data;
+          }
         }
       }
     }
@@ -137,11 +140,14 @@ class InstagramRepository
     $data['media'] = [];
 
     foreach ($media->get('data') as $media) {
-      $data['media'][] = (object) $media;
+      $data['media'][] = (object)$media;
     }
 
-    if (empty($params['max_id']) && 1==2) {
-      $cache->update(['data' => json_encode($data)]);
+    if ($this->useCache) {
+      if (empty($params['max_id'])) {
+        $cache->data = json_encode($data);
+        $cache->save();
+      }
     }
 
     return (object)$data;
