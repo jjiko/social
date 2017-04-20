@@ -135,6 +135,7 @@ class InstagramRepository
       }
     }
 
+
     $media = $this->user()->media($params);
     $data['next'] = $this->next($media);
     $data['media'] = [];
