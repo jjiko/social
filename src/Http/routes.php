@@ -1,16 +1,19 @@
 <?php
+Route::get('instagram/sandbox', ['as' => 'instagram.sandbox', 'uses' => function () {
+  $user = \Jiko\Auth\User::find(2);
+  $iguser = $user->instagram->getClient();
+  dd($iguser->media()->get('1573618186652368166_30589941'));
+}]);
 Route::get('instagram/follows', ['as' => 'instagram.user.follows', 'uses' => function () {
-  $instagram = new Jiko\Instagram\InstagramRepository();
-  $data = $instagram->follows();
+  $user = \Jiko\Auth\User::find(2);
+  $iguser = $user->instagram->getClient();
+  dd($iguser->users()->follows());
 
-  return $data;
 }]);
 
-Route::get('instagram/followers', ['as' => 'instagram.user.followers', 'uses' => function () {
-  $instagram = new Jiko\Instagram\InstagramRepository();
-  $data = $instagram->followers();
-
-  return $data;
+Route::get('instagram/followed-by', ['as' => 'instagram.user.followers', 'uses' => function () {
+  $user = \Jiko\Auth\User::find(2);
+  dd($user->instagram->followedBy());
 }]);
 
 Route::get('instagram/relationship/{f_user_id}', function ($f_user_id) {
