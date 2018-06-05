@@ -9,7 +9,10 @@
     }
   ],
   "require": {
-    "php": ">=5.5.9"
+    "php": ">=7.1.0",
+    "illuminate/support": "^5.6",
+    "larabros/elogram": "~1.2",
+    "facebook/graph-sdk": "^5"
   },
   "autoload": {
     "psr-4": {
